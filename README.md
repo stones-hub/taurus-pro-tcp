@@ -1,6 +1,6 @@
 # Taurus Pro TCP
 
-[![Go Version](https://img.shields.io/badge/Go-1.24.2+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.27.3+-blue.svg)](https://golang.org)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/stones-hub/taurus-pro-tcp)](https://goreportcard.com/report/github.com/stones-hub/taurus-pro-tcp)
 
@@ -37,7 +37,7 @@
 ## 📦 安装
 
 ### 前置要求
-- Go 1.24.2 或更高版本
+- Go 1.27.3 或更高版本
 - 支持的操作系统：Linux、macOS、Windows
 
 ### 安装命令

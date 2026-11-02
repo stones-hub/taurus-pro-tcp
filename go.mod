@@ -1,5 +1,5 @@
 module github.com/stones-hub/taurus-pro-tcp
 
-go 1.24.2
+go 1.27.3
 
-require golang.org/x/time v0.5.0
+require golang.org/x/time v0.16.0
