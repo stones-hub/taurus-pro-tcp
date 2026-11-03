@@ -110,9 +110,9 @@ func (p *Protocol) Pack(message interface{}) ([]byte, error) {
 		return nil, errors.WrapError(errors.ErrorTypeProtocol, err, "failed to marshal message")
 	}
 
-	// 3. 计算总长度
+	// 3. 计算总长度。用 uint64 比较，避免长度转成 uint32 时回绕后绕过上限检查
 	totalLen := HeaderSize + len(data)
-	if uint32(totalLen) > p.maxMessageSize {
+	if uint64(totalLen) > uint64(p.maxMessageSize) {
 		return nil, errors.ErrMessageTooLarge
 	}
 
@@ -149,15 +149,17 @@ func (p *Protocol) Unpack(data []byte) (interface{}, int, error) {
 
 	// 4. 获取数据长度
 	dataLen := binary.BigEndian.Uint32(data[2:6])
-	totalLen := HeaderSize + int(dataLen)
 
-	// 5. 检查长度是否合理
-	if uint32(totalLen) > p.maxMessageSize {
-		if len(data) < totalLen {
+	// 5. 检查长度是否合理。用 uint64 计算总长度：头部长度接近 2^32 时，
+	// 转成 uint32 会回绕成很小的值而绕过上限检查，连接会一直等一个永远不完整的帧
+	total := uint64(HeaderSize) + uint64(dataLen)
+	if total > uint64(p.maxMessageSize) {
+		if uint64(len(data)) < total {
 			return nil, len(data), errors.ErrMessageTooLarge
 		}
-		return nil, totalLen, errors.ErrMessageTooLarge
+		return nil, int(total), errors.ErrMessageTooLarge
 	}
+	totalLen := int(total) // 不超过 maxMessageSize，可以安全转换
 
 	// 6. 检查数据是否完整
 	if len(data) < totalLen {
